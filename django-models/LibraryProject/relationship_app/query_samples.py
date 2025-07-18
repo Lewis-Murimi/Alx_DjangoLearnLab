@@ -3,7 +3,7 @@ import django
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'relationship_app.settings')
 django.setup()
-from relationship_app.models import Author, Book, Library, Librarian
+from .models import Author, Book, Library, Librarian
 
 # Query 1: All books by a specific author
 def books_by_author(author_name):
