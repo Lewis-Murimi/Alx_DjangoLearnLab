@@ -37,6 +37,8 @@ class Register(CreateView):
         login(self.request, self.object)
         return response
 
+register = Register.as_view()
+
 def is_admin(user):
     return hasattr(user,'userprofile') and user.userprofile.role == 'Admin'
 
