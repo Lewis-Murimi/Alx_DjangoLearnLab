@@ -7,6 +7,17 @@
 
 <p>{{ post.content|linebreaks }}</p>
 
+<!-- 🔖 Tags Section -->
+{% if post.tags.exists %}
+    <p><strong>Tags:</strong>
+        {% for tag in post.tags.all %}
+            <a href="{% url 'posts_by_tag' tag.name %}" style="margin-right: 5px;">#{{ tag.name }}</a>
+        {% endfor %}
+    </p>
+{% endif %}
+
+<hr>
+
 <h2>Comments</h2>
 <div>
     {% for comment in post.comments.all %}
@@ -36,7 +47,6 @@
 {% else %}
     <p><a href="{% url 'login' %}">Login</a> to add a comment.</p>
 {% endif %}
-
 
 <p>
   <a href="{% url 'posts' %}">← Back to list</a>
