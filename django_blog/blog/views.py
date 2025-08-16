@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -7,8 +7,8 @@ from django.contrib.auth import logout
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, DeleteView, CreateView, DetailView, ListView
 
-from .forms import UserRegisterForm, UserUpdateForm, PostForm
-from .models import Post
+from .forms import UserRegisterForm, UserUpdateForm, PostForm, CommentForm
+from .models import Post, Comment
 
 
 # Create your views here.
@@ -97,3 +97,39 @@ class PostDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
     model = Post
     template_name = "blog/post_confirm_delete.html"
     success_url = reverse_lazy("posts")
+
+@login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('post_detail', pk=post.id)
+    else:
+        form = CommentForm()
+    return redirect('post_detail', pk=post.id)
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(author=self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(author=self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})

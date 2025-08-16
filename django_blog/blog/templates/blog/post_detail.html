@@ -7,6 +7,37 @@
 
 <p>{{ post.content|linebreaks }}</p>
 
+<h2>Comments</h2>
+<div>
+    {% for comment in post.comments.all %}
+        <div style="margin-bottom: 10px; border-bottom: 1px solid #ccc; padding: 5px;">
+            <p><strong>{{ comment.author }}</strong> said:</p>
+            <p>{{ comment.content }}</p>
+            <small>Posted on {{ comment.created_at|date:"F d, Y H:i" }}</small>
+            {% if user == comment.author %}
+                <p>
+                    <a href="{% url 'comment_edit' comment.pk %}">Edit</a> |
+                    <a href="{% url 'comment_delete' comment.pk %}">Delete</a>
+                </p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No comments yet. Be the first!</p>
+    {% endfor %}
+</div>
+
+{% if user.is_authenticated %}
+    <h3>Add a Comment</h3>
+    <form method="post" action="{% url 'add_comment' post.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Post Comment</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}">Login</a> to add a comment.</p>
+{% endif %}
+
+
 <p>
   <a href="{% url 'posts' %}">← Back to list</a>
   {% if user.is_authenticated and user == post.author %}
