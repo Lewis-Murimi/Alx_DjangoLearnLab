@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from taggit.forms import TagWidget
 
 from .models import Post, Comment, Tag
 
@@ -26,6 +27,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ["title", "content", "tags"]
+        widgets = {
+            "tags": TagWidget(),  # <-- this is what you were missing
+        }
 
     def save(self, commit=True):
         post = super().save(commit=False)
