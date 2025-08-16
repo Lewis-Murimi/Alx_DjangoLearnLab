@@ -1,9 +1,15 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
-from .forms import UserRegisterForm, UserUpdateForm
+from django.urls import reverse_lazy
+from django.views.generic import UpdateView, DeleteView, CreateView, DetailView, ListView
+
+from .forms import UserRegisterForm, UserUpdateForm, PostForm
+from .models import Post
+
 
 # Create your views here.
 # Register View
@@ -49,3 +55,45 @@ def profile(request):
     else:
         form = UserUpdateForm(instance=request.user)
     return render(request, "blog/profile.html", {"form": form})
+
+class PostListView(ListView):
+    model = Post
+    template_name = "blog/post_list.html"
+    context_object_name = "posts"
+    paginate_by = 10
+    ordering = ["-published_date"]  # newest first
+
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "blog/post_detail.html"
+    context_object_name = "post"
+
+
+class AuthorRequiredMixin(UserPassesTestMixin):
+    """Only the author can edit/delete."""
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = "blog/post_form.html"
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class PostUpdateView(LoginRequiredMixin, AuthorRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = "blog/post_form.html"
+
+
+class PostDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
+    model = Post
+    template_name = "blog/post_confirm_delete.html"
+    success_url = reverse_lazy("posts")
