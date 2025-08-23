@@ -5,7 +5,8 @@ from rest_framework.response import Response
 
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
-from ..notifications.models import Notification
+from notifications.models import Notification
+
 
 
 class StandardResultsSetPagination(PageNumberPagination):

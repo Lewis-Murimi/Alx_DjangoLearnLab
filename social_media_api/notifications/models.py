@@ -1,10 +1,7 @@
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-
-from social_media_api.social_media_api import settings
-
-
 # Create your models here.
 
 class Notification(models.Model):
