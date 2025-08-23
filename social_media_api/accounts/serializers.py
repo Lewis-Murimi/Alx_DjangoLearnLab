@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 
+# Registration serializer with explicit CharField usage
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     email = serializers.CharField(max_length=254)
@@ -12,10 +13,9 @@ class RegisterSerializer(serializers.Serializer):
     profile_picture = serializers.CharField(required=False, allow_blank=True)
 
     def create(self, validated_data):
-        # Explicitly use get_user_model().objects.create_user
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data.get('email'),
+            email=validated_data.get('email', ''),
             password=validated_data['password'],
             bio=validated_data.get('bio', ''),
             profile_picture=validated_data.get('profile_picture', None)
@@ -23,6 +23,7 @@ class RegisterSerializer(serializers.Serializer):
         Token.objects.create(user=user)
         return user
 
+# Serializer for returning user info
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
