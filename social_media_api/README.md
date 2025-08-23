@@ -264,8 +264,65 @@ http://127.0.0.1:8000/api/
   "content": "Updated comment content."
 }
 ```
+
+## 4. User Follows and Feed Endpoints
+
+### 4.1 Follow a User
+- **URL:** `/accounts/follow/<user_id>/`
+- **Method:** `POST`
+- **Description:** Follow a user by their ID.
+- **Headers:** `Authorization: Token <token>`
+- **Response Example:**
+```json
+{
+  "detail": "You are now following jane_doe."
+}
+```
+### 4.2 Unfollow a User
+- URL: `/accounts/unfollow/<user_id>/`
+- Method: `POST`
+- Description: Unfollow a user by their ID.
+- Headers: `Authorization`: Token <token>
+- **Response Example:**
+```json
+{
+  "detail": "You have unfollowed jane_doe."
+}
+```
+### 4.3 User Feed
+- URL: `/posts/feed/`
+- Method: `GET`
+- Description: Retrieves posts from users the authenticated user follows, ordered by newest first.
+- Headers: `Authorization`: Token <token>
+- **Response Example:**
+
+```json
+[
+  {
+    "id": 5,
+    "author": 2,
+    "author_username": "jane_doe",
+    "title": "Travel Tips",
+    "content": "Some useful tips for your next adventure...",
+    "created_at": "2025-08-23T12:00:00Z",
+    "updated_at": "2025-08-23T12:00:00Z",
+    "comments": []
+  },
+  {
+    "id": 3,
+    "author": 3,
+    "author_username": "mark_smith",
+    "title": "Cooking Recipes",
+    "content": "My favorite recipe for a quick meal...",
+    "created_at": "2025-08-23T11:00:00Z",
+    "updated_at": "2025-08-23T11:00:00Z",
+    "comments": []
+  }
+]
+```
+
 ## Notes
 - All endpoints requiring authentication must include the header:
-- `Authorization`: Token <your_token_here>
+  - `Authorization`: Token <your_token_here>
 - Pagination defaults to 10 items per page. Use ?page=<number>&page_size=<number> for custom pagination.
 - Posts can be searched by title or content using: ?search=keyword.
