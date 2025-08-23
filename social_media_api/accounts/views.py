@@ -1,9 +1,12 @@
-from rest_framework.decorators import api_view, permission_classes
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, status
+from rest_framework import permissions, status, generics
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.authtoken.models import Token
+
+from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer
 
 User = get_user_model()
@@ -46,22 +49,37 @@ class ProfileView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
-@api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
-def follow_user(request, user_id):
-    try:
-        target_user = User.objects.get(id=user_id)
-        request.user.following.add(target_user)
-        return Response({"detail": f"You are now following {target_user.username}."}, status=status.HTTP_200_OK)
-    except User.DoesNotExist:
-        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
-def unfollow_user(request, user_id):
-    try:
-        target_user = User.objects.get(id=user_id)
+
+class CustomUserSerializer:
+    pass
+
+
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+
+    @staticmethod
+    def post(request, user_id):
+        target_user = get_object_or_404(CustomUser, id=user_id)
+        request.user.following.add(target_user)
+        return Response(
+            {"detail": f"You are now following {target_user.username}."},
+            status=status.HTTP_200_OK
+        )
+
+
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+
+    @staticmethod
+    def post(request, user_id):
+        target_user = get_object_or_404(CustomUser, id=user_id)
         request.user.following.remove(target_user)
-        return Response({"detail": f"You have unfollowed {target_user.username}."}, status=status.HTTP_200_OK)
-    except User.DoesNotExist:
-        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"detail": f"You have unfollowed {target_user.username}."},
+            status=status.HTTP_200_OK
+        )
