@@ -1,56 +1,71 @@
 # Social Media API
 
-A basic Social Media API built with Django and Django REST Framework (DRF) that supports user registration, authentication, and profile management.
+A basic Social Media API built with Django and Django REST Framework (DRF) that supports user registration,
+authentication, and profile management.
 
 ## Project Setup
 
-This project uses Django with Django REST Framework and token-based authentication. It includes a custom user model with additional fields like `bio`, `profile_picture`, and `followers`.
+This project uses Django with Django REST Framework and token-based authentication. It includes a custom user model with
+additional fields like `bio`, `profile_picture`, and `followers`.
 
 ---
 
 ## Installation
 
 1. **Clone the repository:**
+
 ```bash
 git clone <repository_url>
 cd social_media_api
-````
+```
+
 2. **Create a virtual environment(optional):**
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
+
 3. **Install the required packages:**
+
 ```bash
 pip install -r requirements.txt
 pip install django djangorestframework djangorestframework-authtoken Pillow
 ```
+
 ## Database Migrations
+
 4. **Apply database migrations:**
+
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
+
 ## Running the Server
+
 5. **Run the development server:**
+
 ```bash
 python manage.py runserver
 ```
 
-
 ## Social Media API Documentation
 
 ## Base URL
+
 http://127.0.0.1:8000/api/
 
 ## 1. Accounts Endpoints
 
 ### 1.1 Register User
+
 - **URL:** `/accounts/register/`
 - **Method:** `POST`
 - **Description:** Registers a new user and returns a token for authentication.
 - **Headers:** `Content-Type: application/json`
 - **Request Body Example:**
+
 ```json
 {
   "username": "john_doe",
@@ -60,6 +75,7 @@ http://127.0.0.1:8000/api/
   "profile_picture": null
 }
 ```
+
 - **Response Example:**
 
 ```json
@@ -75,19 +91,24 @@ http://127.0.0.1:8000/api/
   "token": "abc123..."
 }
 ```
+
 ### 1.2 Login User
+
 - URL: /accounts/login/
 - Method: POST
 - Description: Logs in a user and returns a token.
 - Headers: Content-Type: application/json
 - **Request Body Example:**
+
 ```json
 {
   "username": "john_doe",
   "password": "securepassword123"
 }
 ```
+
 - **Response Example:**
+
 ```json
 {
   "user": {
@@ -101,12 +122,15 @@ http://127.0.0.1:8000/api/
   "token": "abc123..."
 }
 ```
+
 ### 1.3 Get Profile
+
 - URL: /accounts/profile/
 - Method: GET
 - Description: Returns the authenticated user's profile.
 - Headers: Authorization: Token <token>
 - **Response Example:**
+
 ```json
 {
   "id": 1,
@@ -117,18 +141,22 @@ http://127.0.0.1:8000/api/
   "followers": []
 }
 ```
+
 ## 2. Posts Endpoints
+
 ### 2.1 List Posts
+
 - URL: /posts/
 - Method: GET
 - Description: Retrieves a paginated list of all posts. Supports search by title or content.
 - Headers: Authorization: Token <token>
 - Query Parameters:
-  * `search`: Filter posts by keyword in title or content
-  * `page`: Page number
-  * `page_size`: Number of posts per page
+    * `search`: Filter posts by keyword in title or content
+    * `page`: Page number
+    * `page_size`: Number of posts per page
 
 - **Response Example:**
+
 ```json
 [
   {
@@ -143,22 +171,27 @@ http://127.0.0.1:8000/api/
   }
 ]
 ```
+
 ### 2.2 Create Post
+
 - URL: `/posts/`
 - Method: `POST`
 - Description: Creates a new post. Only authenticated users can create posts.
 - Headers:
-  * `Content-Type`: application/json
-  * `Authorization`: Token <token>
+    * `Content-Type`: application/json
+    * `Authorization`: Token <token>
 
 - **Request Body Example:**
+
 ```json
 {
   "title": "My First Post",
   "content": "This is the content of my first post."
 }
 ```
+
 - **Response Example:**
+
 ```json
 {
   "id": 1,
@@ -173,22 +206,26 @@ http://127.0.0.1:8000/api/
 ```
 
 ### 2.3 Retrieve, Update, Delete Post
+
 - URL: `/posts/<id>/`
 - Methods:
-  * `GET` → Retrieve a post
-  * `PUT` → Update a post (author only)
-  * `DELETE` → Delete a post (author only)
+    * `GET` → Retrieve a post
+    * `PUT` → Update a post (author only)
+    * `DELETE` → Delete a post (author only)
 
 - Headers: `Authorization`: Token <token>
 
 - **Update Request Body Example:**
+
 ```json
 {
   "title": "Updated Post Title",
   "content": "Updated content of the post."
 }
 ```
+
 - **Response Example (`GET`):**
+
 ```json
 {
   "id": 1,
@@ -201,14 +238,18 @@ http://127.0.0.1:8000/api/
   "comments": []
 }
 ```
+
 ## 3. Comments Endpoints
+
 ### 3.1 List Comments
+
 - URL: `/comments/`
 - Method: `GET`
 - Description: Retrieves a paginated list of all comments.
 - Headers: `Authorization`: Token <token>
 
 - **Response Example:**
+
 ```json
 [
   {
@@ -224,21 +265,25 @@ http://127.0.0.1:8000/api/
 ```
 
 ### 3.2 Create Comment
+
 - URL: `/comments/`
 - Method: `POST`
 - Description: Adds a comment to a post. Only authenticated users can comment.
 - Headers:
-  * `Content-Type`: application/json
-  * `Authorization`: Token <token>
+    * `Content-Type`: application/json
+    * `Authorization`: Token <token>
 
 - **Request Body Example:**
+
 ```json
 {
   "post": 1,
   "content": "This is a comment on post 1."
 }
 ```
+
 - **Response Example:**
+
 ```json
 {
   "id": 1,
@@ -250,15 +295,18 @@ http://127.0.0.1:8000/api/
   "updated_at": "2025-08-23T08:05:00Z"
 }
 ```
+
 ### 3.3 Retrieve, Update, Delete Comment
+
 - URL: `/comments/<id>/`
 - Methods:
-  * `GET` → Retrieve a comment
-  * `PUT` → Update a comment (author only)
-  * `DELETE` → Delete a comment (author only)
+    * `GET` → Retrieve a comment
+    * `PUT` → Update a comment (author only)
+    * `DELETE` → Delete a comment (author only)
 - Headers: `Authorization`: Token <token>
 
 - **Update Request Body Example:**
+
 ```json
 {
   "content": "Updated comment content."
@@ -268,28 +316,35 @@ http://127.0.0.1:8000/api/
 ## 4. User Follows and Feed Endpoints
 
 ### 4.1 Follow a User
+
 - **URL:** `/accounts/follow/<user_id>/`
 - **Method:** `POST`
 - **Description:** Follow a user by their ID.
 - **Headers:** `Authorization: Token <token>`
 - **Response Example:**
+
 ```json
 {
   "detail": "You are now following jane_doe."
 }
 ```
+
 ### 4.2 Unfollow a User
+
 - URL: `/accounts/unfollow/<user_id>/`
 - Method: `POST`
 - Description: Unfollow a user by their ID.
 - Headers: `Authorization`: Token <token>
 - **Response Example:**
+
 ```json
 {
   "detail": "You have unfollowed jane_doe."
 }
 ```
+
 ### 4.3 User Feed
+
 - URL: `/posts/feed/`
 - Method: `GET`
 - Description: Retrieves posts from users the authenticated user follows, ordered by newest first.
@@ -321,8 +376,68 @@ http://127.0.0.1:8000/api/
 ]
 ```
 
+## 5. Likes and Notifications Endpoints
+
+### 5.1 Like a Post
+
+- **URL:** `/posts/<post_id>/like/`
+- **Method:** `POST`
+- **Description:** Like a post. Creates a notification for the post author.
+- **Headers:** `Authorization: Token <token>`
+- **Response Example:**
+
+```json
+{
+  "detail": "Post liked."
+}
+```
+
+### 5.2 Unlike a Post
+
+- URL: `/posts/<post_id>/unlike/`
+- Method: `POST`
+- Description: Unlike a post.
+- Headers: `Authorization:` Token <token>
+- **Response Example:**
+
+```json
+{
+  "detail": "Post unliked."
+}
+```
+
+### 5.3 View Notifications
+
+- URL: `/notifications/`
+- Method: `GET`
+- Description: Fetch notifications for the authenticated user, newest first.
+- Headers: `Authorization`: Token <token>
+- **Response Example:**
+
+```json
+[
+  {
+    "id": 1,
+    "actor_username": "john_doe",
+    "verb": "liked your post",
+    "target": 5,
+    "is_read": false,
+    "timestamp": "2025-08-23T12:30:00Z"
+  },
+  {
+    "id": 2,
+    "actor_username": "jane_doe",
+    "verb": "commented on your post",
+    "target": 3,
+    "is_read": false,
+    "timestamp": "2025-08-23T12:20:00Z"
+  }
+]
+```
+
 ## Notes
+
 - All endpoints requiring authentication must include the header:
-  - `Authorization`: Token <your_token_here>
+    - `Authorization`: Token <your_token_here>
 - Pagination defaults to 10 items per page. Use ?page=<number>&page_size=<number> for custom pagination.
 - Posts can be searched by title or content using: ?search=keyword.
