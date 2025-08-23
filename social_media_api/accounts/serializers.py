@@ -6,10 +6,10 @@ User = get_user_model()
 
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
-    email = serializers.EmailField()
+    email = serializers.CharField(max_length=254)
     password = serializers.CharField(write_only=True)
     bio = serializers.CharField(required=False, allow_blank=True)
-    profile_picture = serializers.ImageField(required=False, allow_null=True)
+    profile_picture = serializers.CharField(required=False, allow_blank=True)
 
     def create(self, validated_data):
         # Explicitly use get_user_model().objects.create_user
